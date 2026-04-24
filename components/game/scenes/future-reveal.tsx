@@ -6,6 +6,9 @@ import { cn } from '@/lib/utils'
 import { useState, useMemo, useEffect } from 'react'
 import { saveGameSession } from '@/lib/firebase'
 
+import Link from 'next/link'
+import { BarChart2 } from 'lucide-react'
+
 interface FutureRevealProps {
   playerName: string
   role: Role
@@ -200,6 +203,15 @@ export function FutureReveal({ playerName, role, decision, skills, values, onRes
             >
               Explorar otro futuro
             </button>
+            <div className="pt-4 flex justify-center">
+              <Link 
+                href="/stats" 
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-cyan-400 transition-colors group"
+              >
+                <BarChart2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                <span>Ver Estadísticas Globales</span>
+              </Link>
+            </div>
           </div>
         )}
       </div>

@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { motion } from 'motion/react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import { BarChart2 } from 'lucide-react'
 
 interface IntroSceneProps {
   onStart: (name: string) => void
@@ -60,6 +62,16 @@ export function IntroScene({ onStart }: IntroSceneProps) {
             Sincronizar Datos
           </Button>
         </form>
+
+        <div className="mt-8 pt-6 border-t border-white/10 flex justify-center">
+          <Link 
+            href="/stats" 
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-cyan-400 transition-colors group"
+          >
+            <BarChart2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            <span>Ver Estadísticas del Estudio</span>
+          </Link>
+        </div>
       </motion.div>
     </div>
   )
