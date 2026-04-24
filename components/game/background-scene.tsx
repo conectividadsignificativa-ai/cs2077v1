@@ -25,7 +25,7 @@ export function BackgroundScene({ scene, className }: BackgroundSceneProps) {
   const getSceneStyles = () => {
     switch (scene) {
       case 'intro':
-        return 'bg-gradient-to-b from-slate-900 via-purple-950 to-slate-900'
+        return 'bg-black'
       case 'coworking':
         return 'bg-gradient-to-br from-slate-800 via-blue-950 to-slate-900'
       case 'oficina_publica':
@@ -72,6 +72,18 @@ export function BackgroundScene({ scene, className }: BackgroundSceneProps) {
       className
     )}>
       {/* Grid overlay for synthwave effect */}
+      {scene === 'intro' && (
+        <div className="absolute inset-0 overflow-hidden">
+          <img 
+            src="https://picsum.photos/seed/cyberpunk_colombia/1920/1080" 
+            alt="Cyberpunk Colombia Intro"
+            className="absolute inset-0 w-full h-full object-cover opacity-80 animate-pan-horizontal"
+            style={{ minWidth: '110%', minHeight: '110%', left: '-5%', top: '-5%' }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/20" />
+        </div>
+      )}
+
       {(scene === 'synthwave' || scene === 'intro') && (
         <div 
           className="absolute inset-0 opacity-20"

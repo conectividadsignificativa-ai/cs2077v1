@@ -22,11 +22,16 @@ export function IntroScene({ onStart }: IntroSceneProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8 z-10 relative">
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full p-8 rounded-2xl bg-card/90 backdrop-blur-md border border-border shadow-2xl"
+        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+        animate={{ 
+          opacity: 1, 
+          y: 0, 
+          scale: 1,
+        }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="max-w-md w-full p-8 rounded-2xl bg-card/60 backdrop-blur-xl border border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-float"
       >
-        <h1 className="text-4xl font-bold text-center mb-6 text-foreground italic uppercase tracking-tighter">
+        <h1 className="text-4xl font-bold text-center mb-6 text-white italic uppercase tracking-tighter drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
           COLOMBIA 2077
         </h1>
         <p className="text-muted-foreground text-center mb-8">
