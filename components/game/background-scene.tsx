@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
-
-const BASE_PATH = process.env.NODE_ENV === 'production' ? '/cs2077v1' : ''
 
 type SceneType = 
   | 'intro' 
@@ -76,15 +75,14 @@ export function BackgroundScene({ scene, className }: BackgroundSceneProps) {
       {/* 1. Base Image Layer */}
       {scene === 'intro' && (
         <div className="absolute inset-0 overflow-hidden">
-          <img 
-            src={`${BASE_PATH}/intro_city.jpeg`} 
+          <Image 
+            src="/intro_city.jpeg" 
             alt="Cyberpunk Colombia Intro"
-            className="absolute inset-0 w-full h-full object-cover animate-pan-horizontal"
+            fill
+            className="object-cover animate-pan-horizontal"
             style={{ minWidth: '110%', minHeight: '110%', left: '-5%', top: '-5%' }}
-            onError={(e) => {
-              console.error(`Error loading image: ${e.currentTarget.src}`);
-              e.currentTarget.style.display = 'none';
-            }}
+            priority
+            referrerPolicy="no-referrer"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
         </div>
