@@ -12,7 +12,9 @@ const nextConfig = {
   output: 'export',
   distDir: 'dist',
   // Si se despliega en un path como /repo-name/, descomentar y ajustar:
-  // basePath: '/cs2077v',
+  basePath: process.env.NODE_ENV === 'production' ? '/cs2077v1' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/cs2077v1/' : '',
+  trailingSlash: true,
 }
 
 export default nextConfig
