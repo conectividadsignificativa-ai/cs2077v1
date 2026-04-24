@@ -19,7 +19,7 @@ service cloud.firestore {
         request.resource.data.decision is string &&
         request.resource.data.timestamp == request.time;
       
-      allow read: if false; // Only manageable via Firebase Console or Admin for now
+      allow read: if true; // Allow public read for statistics dashboard
     }
   }
 }

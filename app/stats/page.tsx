@@ -26,10 +26,24 @@ interface StatsData {
   decisionCounts: { name: string; value: number; color: string }[]
   skillCounts: { name: string; value: number; color: string }[]
   valueCounts: { name: string; value: number; color: string }[]
+  shockDecisionMatrix: { 
+    shock: string; 
+    Colaborar: number; 
+    Protegerse: number; 
+    'No hacer nada': number;
+    total: number 
+  }[]
   totalPlayers: number
 }
 
 const COLORS = ['#F472B6', '#38BDF8', '#FB923C', '#A855F7', '#4ADE80', '#2DD4BF']
+
+const ROLE_TO_SHOCK: Record<string, string> = {
+  'emprendedor': 'Ransomware Pagos',
+  'servidor_publico': 'Vulnerabilidad Gov',
+  'estudiante': 'Colapso Educativo',
+  'campesino': 'Sabotaje Satelital'
+}
 
 export default function StatsPage() {
   const [stats, setStats] = useState<StatsData | null>(null)
@@ -40,11 +54,27 @@ export default function StatsPage() {
       try {
         const q = query(collection(db, 'sessions'), orderBy('timestamp', 'desc'))
         const snapshot = await getDocs(q)
+        console.log("Documents fetched:", snapshot.size)
         
+        if (snapshot.empty) {
+          console.log("No documents found in 'sessions' collection")
+          setStats({
+            totalPlayers: 0,
+            roleCounts: [],
+            decisionCounts: [],
+            skillCounts: [],
+            valueCounts: [],
+            shockDecisionMatrix: []
+          })
+          setLoading(false)
+          return
+        }
+
         const roles: Record<string, number> = {}
         const decisions: Record<string, number> = {}
         const skills: Record<string, number> = {}
         const values: Record<string, number> = {}
+        const matrix: Record<string, Record<string, number>> = {}
         let total = 0
 
         snapshot.forEach((doc) => {
@@ -59,6 +89,14 @@ export default function StatsPage() {
           const decisionLabel = data.decision === 'colaborar' ? 'Colaborar' : 
                                data.decision === 'protegerse' ? 'Protegerse' : 'No hacer nada'
           decisions[decisionLabel] = (decisions[decisionLabel] || 0) + 1
+          
+          // Matrix
+          const shock = ROLE_TO_SHOCK[data.role as string] || 'Otros'
+          if (!matrix[shock]) {
+            matrix[shock] = { 'Colaborar': 0, 'Protegerse': 0, 'No hacer nada': 0, total: 0 }
+          }
+          matrix[shock][decisionLabel] = (matrix[shock][decisionLabel] || 0) + 1
+          matrix[shock].total++
           
           // Count Skills
           if (data.skills && Array.isArray(data.skills)) {
@@ -99,6 +137,13 @@ export default function StatsPage() {
             value, 
             color: COLORS[i % COLORS.length] 
           })).sort((a, b) => b.value - a.value),
+          shockDecisionMatrix: Object.entries(matrix).map(([shock, counts]) => ({
+            shock,
+            Colaborar: Math.round((counts['Colaborar'] / counts.total) * 100),
+            Protegerse: Math.round((counts['Protegerse'] / counts.total) * 100),
+            'No hacer nada': Math.round((counts['No hacer nada'] / counts.total) * 100),
+            total: counts.total
+          }))
         })
       } catch (error) {
         console.error('Error fetching stats:', error)
@@ -121,10 +166,25 @@ export default function StatsPage() {
     )
   }
 
-  if (!stats) {
+  if (!stats || stats.totalPlayers === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0c] text-white">
-        <p>No hay datos suficientes para mostrar estadísticas.</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0a0c] text-white p-6">
+        <div className="max-w-md text-center space-y-6">
+          <div className="p-4 bg-white/5 rounded-full inline-block mb-4">
+            <Users className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <h2 className="text-2xl font-bold">Sin datos para mostrar</h2>
+          <p className="text-muted-foreground">
+            Aun no hay suficientes registros de sesiones terminadas para generar estadísticas útiles. 
+            ¡Completa el juego para ser el primero!
+          </p>
+          <Link 
+            href="/"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-bold hover:scale-105 transition-transform"
+          >
+            Ir al Juego
+          </Link>
+        </div>
       </div>
     )
   }
@@ -251,6 +311,38 @@ export default function StatsPage() {
               </BarChart>
             </ResponsiveContainer>
           </ChartContainer>
+
+          {/* Shock vs Decision Matrix */}
+          <div className="lg:col-span-2">
+            <ChartContainer title="Comparativa: Crisis (Shock) vs Respuesta (%)">
+              <ResponsiveContainer width="100%" height={400}>
+                <BarChart data={stats.shockDecisionMatrix} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2e" vertical={false} />
+                  <XAxis 
+                    dataKey="shock" 
+                    stroke="#666" 
+                    fontSize={12} 
+                    angle={-45} 
+                    textAnchor="end" 
+                    interval={0}
+                    height={80}
+                  />
+                  <YAxis stroke="#666" fontSize={12} unit="%" />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#1a1a1e', border: '1px solid #333', borderRadius: '8px' }}
+                    itemStyle={{ color: '#fff' }}
+                  />
+                  <Legend verticalAlign="top" height={36}/>
+                  <Bar dataKey="Colaborar" stackId="a" fill="#4ADE80" />
+                  <Bar dataKey="Protegerse" stackId="a" fill="#38BDF8" />
+                  <Bar dataKey="No hacer nada" stackId="a" fill="#F472B6" />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-4 text-xs text-muted-foreground text-center font-mono">
+                Muestra el porcentaje de respuestas para cada tipo de crisis experimentada según el rol seleccionado.
+              </div>
+            </ChartContainer>
+          </div>
         </div>
 
         <div className="mt-12 p-6 bg-white/5 rounded-2xl border border-white/10 text-center">
