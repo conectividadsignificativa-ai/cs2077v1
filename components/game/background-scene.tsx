@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 
 type SceneType = 
@@ -50,6 +51,20 @@ export function BackgroundScene({ scene, className }: BackgroundSceneProps) {
     }
   }
 
+  const [mounted, setMounted] = useState(false);
+  const [stars, setStars] = useState<{ left: string, top: string, delay: string, duration: string }[]>([]);
+
+  useEffect(() => {
+    setMounted(true);
+    const newStars = Array.from({ length: 50 }).map(() => ({
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      delay: `${Math.random() * 5}s`,
+      duration: `${2 + Math.random() * 3}s`
+    }));
+    setStars(newStars);
+  }, []);
+
   return (
     <div className={cn(
       'fixed inset-0 transition-all duration-1000',
@@ -82,15 +97,15 @@ export function BackgroundScene({ scene, className }: BackgroundSceneProps) {
 
       {/* Stars/particles */}
       <div className="absolute inset-0 overflow-hidden">
-        {Array.from({ length: 50 }).map((_, i) => (
+        {mounted && stars.map((star, i) => (
           <div
             key={i}
             className="absolute w-1 h-1 bg-white rounded-full opacity-50 animate-twinkle"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${2 + Math.random() * 3}s`
+              left: star.left,
+              top: star.top,
+              animationDelay: star.delay,
+              animationDuration: star.duration
             }}
           />
         ))}

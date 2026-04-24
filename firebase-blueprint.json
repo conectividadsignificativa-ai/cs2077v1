@@ -1,0 +1,25 @@
+{
+  "entities": {
+    "playerSession": {
+      "title": "Player Session",
+      "description": "Records of player choices and archetypes",
+      "type": "object",
+      "properties": {
+        "playerName": { "type": "string" },
+        "role": { "type": "string" },
+        "decision": { "type": "string" },
+        "skills": { "type": "array", "items": { "type": "string" } },
+        "values": { "type": "array", "items": { "type": "string" } },
+        "archetype": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["playerName", "role", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/sessions/{sessionId}": {
+      "schema": "playerSession",
+      "description": "Collection of game sessions"
+    }
+  }
+}

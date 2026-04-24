@@ -19,6 +19,7 @@ export type Value =
   | 'transparencia'
 
 export interface GameState {
+  playerName: string | null
   level: 1 | 2
   scene: number
   role: Role | null

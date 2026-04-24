@@ -1,6 +1,6 @@
 {
-  "name": "cs2077v",
-  "description": "Una aplicación web moderna construida con Next.js y v0 para CS2077v.",
+  "name": "Colombia 2077",
+  "description": "Una experiencia interactiva sobre el futuro digital de Colombia. Captura tu nombre, toma decisiones y descubre tu arquetipo guardado en Firebase.",
   "requestFramePermissions": [],
   "majorCapabilities": []
 }

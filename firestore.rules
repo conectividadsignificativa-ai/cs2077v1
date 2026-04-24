@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    match /sessions/{sessionId} {
+      allow create: if 
+        isValidId(sessionId) &&
+        request.resource.data.playerName is string &&
+        request.resource.data.playerName.size() > 0 &&
+        request.resource.data.playerName.size() <= 100 &&
+        request.resource.data.role is string &&
+        request.resource.data.decision is string &&
+        request.resource.data.timestamp == request.time;
+      
+      allow read: if false; // Only manageable via Firebase Console or Admin for now
+    }
+  }
+}

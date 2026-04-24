@@ -3,9 +3,11 @@
 import { SKILLS_DATA, VALUES_DATA, type Skill, type Value, type Decision, type Role } from '@/lib/game-types'
 import { TypewriterText } from '../typewriter-text'
 import { cn } from '@/lib/utils'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { saveGameSession } from '@/lib/firebase'
 
 interface FutureRevealProps {
+  playerName: string
   role: Role
   decision: Decision
   skills: Skill[]
@@ -14,6 +16,7 @@ interface FutureRevealProps {
 }
 
 const generateFutureMessage = (
+  playerName: string,
   role: Role,
   decision: Decision,
   skills: Skill[],
@@ -43,31 +46,31 @@ const generateFutureMessage = (
 
   if (hasProgramming && valuesInnovation) {
     archetype = 'Arquitecto Digital'
-    title = 'El Futuro que Construyes'
+    title = `El Futuro que Construyes, ${playerName}`
     message = `Ves la tecnologia como herramienta de transformacion. Con tu capacidad de ${skillLabels.join(' y ')}, y tu compromiso con la ${valueLabels.join(' y ')}, estas destinado/a a construir los puentes digitales que conectaran a Colombia con el mundo. Tu vision: una nacion donde la innovacion sirve a todos.`
   } else if (hasLeadership && valuesCommunity) {
     archetype = 'Tejedor Social'
-    title = 'El Futuro que Lideras'
+    title = `El Futuro que Lideras, ${playerName}`
     message = `Tu fuerza esta en unir a las personas. Con habilidades en ${skillLabels.join(' y ')} y valores de ${valueLabels.join(' y ')}, tienes el poder de crear movimientos que transformen comunidades enteras. Tu futuro: ser el puente entre la tecnologia y las necesidades humanas reales.`
   } else if (hasCreativity && valuesEducation) {
     archetype = 'Innovador Educativo'
-    title = 'El Futuro que Imaginas'
+    title = `El Futuro que Imaginas, ${playerName}`
     message = `La creatividad y la educacion son tu combustible. Tus habilidades en ${skillLabels.join(' y ')} combinadas con tu pasion por ${valueLabels.join(' y ')} te posicionan para reinventar como Colombia aprende y crece en la era digital.`
   } else if (hasEmpathy && valuesEquity) {
     archetype = 'Guardian de la Inclusion'
-    title = 'El Futuro que Proteges'
+    title = `El Futuro que Proteges, ${playerName}`
     message = `Tu sensibilidad hacia los demas te distingue. Con ${skillLabels.join(' y ')} y un corazon comprometido con ${valueLabels.join(' y ')}, seras quien asegure que nadie quede atras en la transformacion digital de Colombia.`
   } else if (hasCriticalThinking && valuesTransparency) {
     archetype = 'Vigilante Digital'
-    title = 'El Futuro que Cuestionas'
+    title = `El Futuro que Cuestionas, ${playerName}`
     message = `Tu mente analitica es un escudo contra la desinformacion. Con ${skillLabels.join(' y ')} y compromiso con ${valueLabels.join(' y ')}, estas llamado/a a ser la voz critica que Colombia necesita en un mundo de algoritmos.`
   } else if (hasCommunication && valuesSustainability) {
     archetype = 'Narrador del Cambio'
-    title = 'El Futuro que Comunicas'
+    title = `El Futuro que Comunicas, ${playerName}`
     message = `Las palabras son tu poder. Tus habilidades en ${skillLabels.join(' y ')} junto con tu vision de ${valueLabels.join(' y ')} te convierten en el mensajero que puede inspirar a millones hacia un futuro mas consciente.`
   } else {
     archetype = 'Pionero del Manana'
-    title = 'El Futuro que Defines'
+    title = `El Futuro que Defines, ${playerName}`
     message = `Tu combinacion unica de ${skillLabels.join(' y ')} con valores de ${valueLabels.join(' y ')} te hace un agente de cambio indispensable. No hay una sola formula para el futuro de Colombia, y tu perspectiva singular es exactamente lo que necesitamos.`
   }
 
@@ -83,17 +86,35 @@ const generateFutureMessage = (
   return { title, message, archetype }
 }
 
-export function FutureReveal({ role, decision, skills, values, onRestart }: FutureRevealProps) {
+export function FutureReveal({ playerName, role, decision, skills, values, onRestart }: FutureRevealProps) {
   const [showMessage, setShowMessage] = useState(false)
   const [showButton, setShowButton] = useState(false)
 
   const future = useMemo(() => 
-    generateFutureMessage(role, decision, skills, values),
-    [role, decision, skills, values]
+    generateFutureMessage(playerName, role, decision, skills, values),
+    [playerName, role, decision, skills, values]
   )
 
   const selectedSkillLabels = skills.map(s => SKILLS_DATA.find(sd => sd.id === s))
   const selectedValueLabels = values.map(v => VALUES_DATA.find(vd => vd.id === v))
+
+  useEffect(() => {
+    const saveSession = async () => {
+      try {
+        await saveGameSession({
+          playerName,
+          role,
+          decision,
+          skills,
+          values,
+          archetype: future.archetype
+        })
+      } catch (error) {
+        console.error('Failed to save session:', error)
+      }
+    }
+    saveSession()
+  }, [playerName, role, decision, skills, values, future.archetype])
 
   return (
     <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 md:p-8">

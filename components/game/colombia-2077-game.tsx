@@ -10,6 +10,8 @@ import { ConsequenceReveal } from './scenes/consequence-reveal'
 import { SkillsSelection } from './scenes/skills-selection'
 import { FutureReveal } from './scenes/future-reveal'
 
+import { IntroScene } from './scenes/intro-scene'
+
 type SceneType = 
   | 'intro' 
   | 'coworking' 
@@ -24,6 +26,7 @@ type SceneType =
   | 'synthwave'
 
 const initialState: GameState = {
+  playerName: null,
   level: 1,
   scene: 1,
   role: null,
@@ -46,21 +49,27 @@ export function Colombia2077Game() {
     }, 500)
   }, [])
 
+  const handleNameSubmit = useCallback((playerName: string) => {
+    transition(() => {
+      setGameState(prev => ({ ...prev, playerName, scene: 2 }))
+    })
+  }, [transition])
+
   const handleRoleSelect = useCallback((role: Role) => {
     transition(() => {
-      setGameState(prev => ({ ...prev, role, scene: 2 }))
+      setGameState(prev => ({ ...prev, role, scene: 3 }))
     })
   }, [transition])
 
   const handleDisruptionContinue = useCallback(() => {
     transition(() => {
-      setGameState(prev => ({ ...prev, scene: 3 }))
+      setGameState(prev => ({ ...prev, scene: 4 }))
     })
   }, [transition])
 
   const handleDecision = useCallback((decision: Decision) => {
     transition(() => {
-      setGameState(prev => ({ ...prev, decision, scene: 4 }))
+      setGameState(prev => ({ ...prev, decision, scene: 5 }))
     })
   }, [transition])
 
@@ -91,12 +100,13 @@ export function Colombia2077Game() {
     if (gameState.level === 1) {
       switch (gameState.scene) {
         case 1:
-          return 'intro'
         case 2:
-          return 'disruption'
+          return 'intro'
         case 3:
-          return 'frozen'
+          return 'disruption'
         case 4:
+          return 'frozen'
+        case 5:
           if (gameState.decision === 'colaborar') return 'improved'
           if (gameState.decision === 'no_hacer_nada') return 'deteriorated'
           return 'neutral'
@@ -112,17 +122,19 @@ export function Colombia2077Game() {
     if (gameState.level === 1) {
       switch (gameState.scene) {
         case 1:
-          return <RoleSelection onSelect={handleRoleSelect} />
+          return <IntroScene onStart={handleNameSubmit} />
         case 2:
+          return <RoleSelection onSelect={handleRoleSelect} />
+        case 3:
           return gameState.role && (
             <DisruptionShock 
               role={gameState.role} 
               onContinue={handleDisruptionContinue} 
             />
           )
-        case 3:
-          return <DecisionMoment onDecide={handleDecision} />
         case 4:
+          return <DecisionMoment onDecide={handleDecision} />
+        case 5:
           return gameState.decision && (
             <ConsequenceReveal 
               decision={gameState.decision} 
@@ -137,8 +149,9 @@ export function Colombia2077Game() {
         case 1:
           return <SkillsSelection onComplete={handleSkillsComplete} />
         case 2:
-          return gameState.role && gameState.decision && (
+          return gameState.role && gameState.decision && gameState.playerName && (
             <FutureReveal
+              playerName={gameState.playerName}
               role={gameState.role}
               decision={gameState.decision}
               skills={gameState.selectedSkills}
