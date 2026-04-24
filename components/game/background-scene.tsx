@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
-import introCityImg from '@/public/intro_city.jpeg'
 
 type SceneType = 
   | 'intro' 
@@ -77,7 +76,7 @@ export function BackgroundScene({ scene, className }: BackgroundSceneProps) {
       {scene === 'intro' && (
         <div className="absolute inset-0 overflow-hidden">
           <Image 
-            src={introCityImg} 
+            src="/intro_city.jpeg" 
             alt="Cyberpunk Colombia Intro"
             fill
             className="object-cover animate-pan-horizontal"
