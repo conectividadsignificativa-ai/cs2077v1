@@ -71,19 +71,24 @@ export function BackgroundScene({ scene, className }: BackgroundSceneProps) {
       getSceneStyles(),
       className
     )}>
-      {/* Grid overlay for synthwave effect */}
+      {/* 1. Base Image Layer */}
       {scene === 'intro' && (
         <div className="absolute inset-0 overflow-hidden">
           <img 
             src="/intro_city.jpeg" 
             alt="Cyberpunk Colombia Intro"
-            className="absolute inset-0 w-full h-full object-cover opacity-80 animate-pan-horizontal"
+            className="absolute inset-0 w-full h-full object-cover animate-pan-horizontal"
             style={{ minWidth: '110%', minHeight: '110%', left: '-5%', top: '-5%' }}
+            onError={(e) => {
+              console.error("Error loading image: /intro_city.jpeg");
+              e.currentTarget.style.display = 'none';
+            }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
         </div>
       )}
 
+      {/* 2. Grid overlay */}
       {(scene === 'synthwave' || scene === 'intro') && (
         <div 
           className="absolute inset-0 opacity-20"
@@ -132,7 +137,7 @@ export function BackgroundScene({ scene, className }: BackgroundSceneProps) {
       )}
 
       {/* Vignette */}
-      <div className="absolute inset-0 bg-gradient-radial from-transparent to-black/50" />
+      <div className="absolute inset-0 bg-gradient-radial from-transparent to-black/50 z-10 pointer-events-none" />
     </div>
   )
 }
