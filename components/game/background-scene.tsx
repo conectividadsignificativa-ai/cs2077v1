@@ -75,7 +75,7 @@ export function BackgroundScene({ scene, className }: BackgroundSceneProps) {
       {scene === 'intro' && (
         <div className="absolute inset-0 overflow-hidden">
           <img 
-            src="/intro_city.jpeg" 
+            src="intro_city.jpeg" 
             alt="Cyberpunk Colombia Intro"
             className="absolute inset-0 w-full h-full object-cover animate-pan-horizontal"
             style={{ minWidth: '110%', minHeight: '110%', left: '-5%', top: '-5%' }}
