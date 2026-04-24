@@ -6,6 +6,8 @@ import './globals.css'
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
+const BASE_PATH = process.env.NODE_ENV === 'production' ? '/cs2077v1' : ''
+
 export const metadata: Metadata = {
   title: 'Colombia 2077 - Experiencia Interactiva',
   description: 'Una experiencia narrativa interactiva sobre corresponsabilidad digital y futuros posibles para Colombia',
@@ -13,19 +15,19 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: '/icon-light-32x32.png',
+        url: `${BASE_PATH}/icon-light-32x32.png`,
         media: '(prefers-color-scheme: light)',
       },
       {
-        url: '/icon-dark-32x32.png',
+        url: `${BASE_PATH}/icon-dark-32x32.png`,
         media: '(prefers-color-scheme: dark)',
       },
       {
-        url: '/icon.svg',
+        url: `${BASE_PATH}/icon.svg`,
         type: 'image/svg+xml',
       },
     ],
-    apple: '/apple-icon.png',
+    apple: `${BASE_PATH}/apple-icon.png`,
   },
 }
 
